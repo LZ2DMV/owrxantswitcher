@@ -44,7 +44,7 @@ def initialize_antenna():
         set_gpio_for_antenna(0)
         write_active_antenna('1')
 
-@app.route('/antennaswitch', methods=['POST'])
+@app.route('/antenna_switch', methods=['POST'])
 def antennaswitch():
     data = request.get_json()
     command = data.get('command')
