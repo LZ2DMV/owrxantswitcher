@@ -82,4 +82,4 @@ def set_antenna(antenna_id):
 
 if __name__ == '__main__':
     initialize_antenna()
-    app.run(host='127.0.0.1', port=5432)
+    app.run(host='127.0.0.1', port=8075)
