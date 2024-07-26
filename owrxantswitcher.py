@@ -2,7 +2,10 @@
 # License: Apache 2
 # Copyright (c) 2024 Dimitar Milkov, LZ2DMV
 
+# pip install flask flask-cors RPi.GPIO
+
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import RPi.GPIO as GPIO
 import os
 
@@ -11,6 +14,7 @@ num_antennas = 2
 antenna_pins = [23, 24]
 
 app = Flask(__name__)
+CORS(app)
 GPIO.setmode(GPIO.BCM)
 
 for pin in antenna_pins:
