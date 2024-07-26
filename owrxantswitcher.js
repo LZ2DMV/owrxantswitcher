@@ -4,16 +4,17 @@
 // Modified by DL9UL to provide UI buttons used to call a WebAPI
 // Re-written by Dimitar Milkov, LZ2DMV to a more optimized and clean state
 
+Plugins.owrxantswitcher.API_URL ??= `http://${window.location.hostname}:5001/antennaswitch`;
+
 // Init function of the plugin
 Plugins.owrxantswitcher.init = function () {
 
-  const apiEndpoint = `http://${window.location.hostname}:5001/antennaswitch`;
   let antennaNum = 0;
   const buttons = [];
 
   // Function to send a command via POST
   function sendCommand(command) {
-    fetch(apiEndpoint, {
+    fetch(Plugins.owrxantswitcher.API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ command }),
