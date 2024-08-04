@@ -1,15 +1,9 @@
-# Simple Flask backend to work with the JavaScript frontend for the antenna switcher by DL9UL
-# License: Apache 2
-# Copyright (c) 2024 Dimitar Milkov, LZ2DMV
-
-# pip install flask flask-cors RPi.GPIO
-
-from flask import Flask, request, jsonify
+﻿from flask import Flask, request, jsonify
 from flask_cors import CORS
 import RPi.GPIO as GPIO
 import os
 
-num_antennas = 2
+num_antennas = 3 
 
 antenna_pins = [23, 24]
 
@@ -33,15 +27,26 @@ def write_active_antenna(value):
         file.write(value)
 
 def set_gpio_for_antenna(antenna_id):
-    for i, pin in enumerate(antenna_pins):
-        GPIO.output(pin, GPIO.HIGH if i == antenna_id else GPIO.LOW)
+    if antenna_id == 1:
+        GPIO.output(23, GPIO.HIGH)
+        if GPIO.input(24) == GPIO.HIGH:
+            GPIO.output(24, GPIO.LOW)
+    elif antenna_id == 2:
+        if GPIO.input(23) == GPIO.HIGH:
+            GPIO.output(23, GPIO.LOW)
+        if GPIO.input(24) == GPIO.HIGH:
+            GPIO.output(24, GPIO.LOW)
+    elif antenna_id == 3:
+        GPIO.output(24, GPIO.HIGH)
+        if GPIO.input(23) == GPIO.HIGH:
+            GPIO.output(23, GPIO.LOW)
 
 def initialize_antenna():
     active_antenna = read_active_antenna()
     if active_antenna and active_antenna.isdigit() and 1 <= int(active_antenna) <= num_antennas:
-        set_gpio_for_antenna(int(active_antenna) - 1)
+        set_gpio_for_antenna(int(active_antenna))
     else:
-        set_gpio_for_antenna(0)
+        set_gpio_for_antenna(1)
         write_active_antenna('1')
 
 @app.route('/antenna_switch', methods=['POST'])
@@ -49,8 +54,8 @@ def antennaswitch():
     data = request.get_json()
     command = data.get('command')
 
-    if command.isdigit() and 1 <= int(command) <= num_antennas:
-        return set_antenna(command)
+    if str(command).isdigit() and 1 <= int(command) <= num_antennas:
+        return set_antenna(int(command))
     elif command == 's':
         return get_active_antenna()
     elif command == 'n':
@@ -69,13 +74,13 @@ def get_antenna_count():
 
 def set_antenna(antenna_id):
     active_antenna = read_active_antenna()
-    if active_antenna == antenna_id:
-        return jsonify(payload={'response': antenna_id})
+    if active_antenna == str(antenna_id):
+        return jsonify(payload={'response': str(antenna_id)})
 
     try:
-        set_gpio_for_antenna(int(antenna_id) - 1)
-        write_active_antenna(antenna_id)
-        return jsonify(payload={'response': antenna_id})
+        set_gpio_for_antenna(antenna_id)
+        write_active_antenna(str(antenna_id))
+        return jsonify(payload={'response': str(antenna_id)})
     except Exception as e:
         print(f"Error: {e}")
         return jsonify(payload={'response': '0'}), 500
