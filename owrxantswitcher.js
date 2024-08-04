@@ -1,18 +1,16 @@
-// Antenna switch UI plugin for OpenWebRX+
-// License: MIT
-// Original Example File Copyright (c) 2023 Stanislav Lechev [0xAF], LZ2SLL
-// Modified by DL9UL to provide UI buttons used to call a WebAPI
-// Re-written by Dimitar Milkov, LZ2DMV to a more optimized and clean state
+﻿Plugins.owrxantswitcher.API_URL ??= `http://${window.location.hostname}:8073/antenna_switch`;
 
-Plugins.owrxantswitcher.API_URL ??= `http://${window.location.hostname}:8073/antenna_switch`;
-
-// Init function of the plugin
 Plugins.owrxantswitcher.init = function () {
 
   let antennaNum = 0;
   const buttons = [];
 
-  // Function to send a command via POST
+  const suffixes = [
+    { text: "East", index: 1 },
+    { text: "West", index: 2 },
+    { text: "South", index: 3 }
+  ];
+
   function sendCommand(command) {
     fetch(Plugins.owrxantswitcher.API_URL, {
       method: 'POST',
@@ -36,16 +34,13 @@ Plugins.owrxantswitcher.init = function () {
     .catch(error => console.error('Error:', error));
   }
 
-  // Function to update the button state based on the active antenna
   function updateButtonState(activeAntenna) {
     buttons.forEach((button, index) => {
       button.classList.toggle('highlighted', (index + 1).toString() === activeAntenna);
     });
   }
 
-  // Create buttons and add them to the container
   function createButtons() {
-    // Create antenna section
     const antSection = document.createElement('div');
     antSection.classList.add('openwebrx-section');
 
@@ -63,14 +58,12 @@ Plugins.owrxantswitcher.init = function () {
       antGrid.appendChild(button);
     }
 
-    // Section Divider to hide ANT panel
     const antSectionDivider = document.createElement('div');
     antSectionDivider.id = 'openwebrx-section-ant';
     antSectionDivider.classList.add('openwebrx-section-divider');
     antSectionDivider.onclick = () => UI.toggleSection(antSectionDivider);
-    antSectionDivider.innerHTML = "&blacktriangledown;&nbsp;Antenna";
+    antSectionDivider.innerHTML = "&blacktriangledown; Antenna";
 
-    // Append the container above the "openwebrx-section-modes"
     const targetElement = document.getElementById('openwebrx-section-modes');
     targetElement.parentNode.insertBefore(antSectionDivider, targetElement);
     targetElement.parentNode.insertBefore(antSection, targetElement);
@@ -82,8 +75,9 @@ Plugins.owrxantswitcher.init = function () {
     const button = document.createElement('div');
     button.id = `owrx-ant-button-${i}`;
     button.classList.add('openwebrx-button');
-    button.textContent = `ANT ${i}`;
-    button.onclick = () => sendCommand(String(i));
+    const suffix = suffixes[i - 1];
+    button.textContent = `${suffix.text}`;
+    button.onclick = () => sendCommand(suffix.index);
     return button;
   }
 
