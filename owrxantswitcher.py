@@ -3,9 +3,9 @@ from flask_cors import CORS
 import RPi.GPIO as GPIO
 import os
 
-num_antennas = 3 
+num_antennas = 4
 
-antenna_pins = [23, 24]
+antenna_pins = [23, 24, 25]
 
 app = Flask(__name__)
 CORS(app)
@@ -40,6 +40,14 @@ def set_gpio_for_antenna(antenna_id):
         GPIO.output(24, GPIO.HIGH)
         if GPIO.input(23) == GPIO.HIGH:
             GPIO.output(23, GPIO.LOW)
+        if GPIO.input(25) == GPIO.HIGH:
+            GPIO.output(25, GPIO.LOW)
+    elif antenna_id == 4:
+        GPIO.output(25, GPIO.HIGH)
+        if GPIO.input(23) == GPIO.HIGH:
+            GPIO.output(23, GPIO.LOW)
+        if GPIO.input(24) == GPIO.LOW:
+            GPIO.output(24, GPIO.HIGH)
 
 def initialize_antenna():
     active_antenna = read_active_antenna()
