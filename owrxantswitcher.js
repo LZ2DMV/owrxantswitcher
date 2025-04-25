@@ -8,7 +8,8 @@ Plugins.owrxantswitcher.init = function () {
   const suffixes = [
     { text: "East", index: 1 },
     { text: "West", index: 2 },
-    { text: "South", index: 3 }
+    { text: "South", index: 3 },
+    { text: "BOG-S", index: 4 }
   ];
 
   function sendCommand(command) {
